@@ -5,8 +5,8 @@ import { findById } from "../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId } from "../repositories/cardRepository.js";
 
 export async function newCardsMiddleware(req: Request, res: Response, next: NextFunction) {
-    const xApiKey: string  = req.header('x-api-key')
-    const { type, employeeId } : { type: TransactionTypes, employeeId: number  } = req.body;
+    const xApiKey : string  = req.header('x-api-key')
+    const { type, employeeId } : { type : TransactionTypes, employeeId : number  } = req.body;
 
     if(!xApiKey || !type || !employeeId){
         return res.status(422).send("Unprocessable Entity")
@@ -24,7 +24,7 @@ export async function newCardsMiddleware(req: Request, res: Response, next: Next
         }
 
         const verifyCard = await findByTypeAndEmployeeId(type, employeeId)
-        if(verifyCard == undefined) {
+        if(verifyCard != undefined) {
             return res.status(404).send(`This employee already has a ${type} card`)
         }
         next()

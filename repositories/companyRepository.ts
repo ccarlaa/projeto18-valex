@@ -11,6 +11,5 @@ export async function findByApiKey(apiKey: string) {
     `SELECT * FROM companies WHERE "apiKey"=$1`,
     [apiKey]
   );
-  console.log(result)
   return result.rows[0];
 }
