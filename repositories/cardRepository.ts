@@ -130,6 +130,17 @@ export async function activeCard(id: number, password: string) {
   );
 }
 
+export async function blockCard(id: number) {
+  connection.query(
+    `
+      UPDATE cards
+        SET "isBlocked" = true
+      WHERE id = ($1)
+    `,
+    [id]
+  );
+}
+
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
 }
