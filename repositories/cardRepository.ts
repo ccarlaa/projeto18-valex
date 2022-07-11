@@ -42,7 +42,7 @@ export async function findById(id: number) {
 export async function findByTypeAndEmployeeId(
   type: TransactionTypes,
   employeeId: number
-) {
+  ) {
   const result = await connection.query<Card, [TransactionTypes, number]>(
     `SELECT * FROM cards WHERE type=$1 AND "employeeId"=$2`,
     [type, employeeId]
@@ -116,6 +116,28 @@ export async function update(id: number, cardData: CardUpdateData) {
     WHERE $1=id
   `,
     [id, ...cardValues]
+  );
+}
+
+export async function activeCard(id: number, password: string) {
+  connection.query(
+    `
+      UPDATE cards
+        SET password = ($1), "isBlocked" = false
+      WHERE id = ($2)
+    `,
+    [password, id]
+  );
+}
+
+export async function blockCard(id: number, isBlocked: boolean) {
+  connection.query(
+    `
+      UPDATE cards
+        SET "isBlocked" = ($2)
+      WHERE id = ($1)
+    `,
+    [id, isBlocked]
   );
 }
 
