@@ -1,6 +1,6 @@
 
 import { Request, Response } from "express";
-import { newCardService } from "../services/cardsServices.js";
+import { newCardService, activationCardService, viewCardStatusService } from "../services/cardsServices.js";
 import { TransactionTypes } from "../repositories/cardRepository.js";
 
 export async function newCard(req: Request, res: Response) {
@@ -12,4 +12,20 @@ export async function newCard(req: Request, res: Response) {
     } catch(err) {
         return res.status(500)
     }
+}
+
+export async function cardActivation(req: Request, res: Response) {
+    const { id, password } : { id : number, password : string  } = req.body;
+    try {
+        activationCardService(password, id)
+        return res.status(200).send("Card unlocked")
+    } catch(err) {
+        return res.status(500)
+    }
+}
+
+export async function viewCardStatus(req: Request, res: Response) {
+    const { id } : { id: number } = req.body;
+    const status = await viewCardStatusService(id);
+    return res.status(200).send(status)
 }
