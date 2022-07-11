@@ -14,7 +14,7 @@ import dayjs from "dayjs";
     if(verifyEmployeeId == undefined) {
         throw { status: 404, message: "No employee with this id" }
     }
-    return 
+    return;
 }
 
  async function verifyCompany(xApiKey: string) {
@@ -22,7 +22,7 @@ import dayjs from "dayjs";
     if(verifyCompany == undefined) {
         throw { status: 404, message: "No company with this api key" }
     }
-    return
+    return;
 }
 
  async function verifyCardByType(type: TransactionTypes, employeeId: number) {
@@ -30,7 +30,7 @@ import dayjs from "dayjs";
     if(verifyCard != undefined) {
         throw { status: 404, message: `This employee already has a ${type} card` }
     }
-    return 
+    return;
 }
 
  async function verifyPassword(password: string, cardPassword: string) {
@@ -42,7 +42,7 @@ import dayjs from "dayjs";
     if (cardPasswordDecrypted != password) {
         throw { status: 401, message: "Wrong password" }
     }
-    return
+    return;
 }
 
 async function newPasswordVerification(password: string) {
@@ -50,7 +50,7 @@ async function newPasswordVerification(password: string) {
     if(password.length != 4 || passwordNumeric > 10000) {
         throw { status: 401, message: "Invalid password" }
     }
-    return
+    return;
 }
 
  async function verifyCVC(CVCcard: string, CVC: string) {
@@ -59,14 +59,14 @@ async function newPasswordVerification(password: string) {
     if(CVCCardDecrypt != CVCdecrypt) {
         throw { status: 422, message: "Wrong CVC" };
     }
-    return
+    return;
 }
 
  async function verifyExpirationDate(expirationDate: any) {
     if(dayjs().isBefore(expirationDate)){
         throw { status: 401, message: "Expired card" };
     }
-    return
+    return;
 }
 
  async function cardVerificationInfos(id: number) {
@@ -111,7 +111,7 @@ export async function newCardService(employeeId: number, type: TransactionTypes,
         type,
     }
     
-    return newCard
+    return newCard;
 }
 
 export async function activationCardService( password : string, id : number, CVC: string) {
@@ -154,7 +154,7 @@ export async function viewCardStatusService(id: number) {
         "transactions": payments,
         "recharges": recharges 
     }
-    return status
+    return status;
 }
 
 export async function blockCardService(id: number, password: string) {
@@ -167,10 +167,24 @@ export async function blockCardService(id: number, password: string) {
     await verifyExpirationDate(expirationDate)
 
     if(cardVerification.isBlocked) {
-        throw { status: 409, message: "Card already locked" };
+        throw { status: 409, message: "Card already blocked" };
     }
+    return;
+}
 
-    return
+export async function unlockCardService(id: number, password: string) {
+    const cardVerification: any = await cardVerificationInfos(id)
+
+    const cardPassword: string = cardVerification.password;
+    await verifyPassword(password, cardPassword);
+
+    const expirationDate = cardVerification.expirationDate;
+    await verifyExpirationDate(expirationDate)
+
+    if(!cardVerification.isBlocked) {
+        throw { status: 409, message: "Card already unlocked" };
+    }
+    return;
 }
 
 

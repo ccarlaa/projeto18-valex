@@ -1,6 +1,6 @@
 
 import { Request, Response } from "express";
-import { newCardService, activationCardService, viewCardStatusService, blockCardService } from "../services/cardsServices.js";
+import { newCardService, activationCardService, viewCardStatusService, blockCardService, unlockCardService } from "../services/cardsServices.js";
 import { blockCard as blockCardRepository, insert, activeCard } from "../repositories/cardRepository.js";
 import { TransactionTypes } from "../repositories/cardRepository.js";
 import { encrypt } from "../utils/criptografy.js";
@@ -39,7 +39,18 @@ export async function blockCard(req: Request, res: Response) {
     const { id, password } : { id: number, password: string } = req.body;
     await blockCardService(id, password);
     try {
-        await blockCardRepository(id);
+        await blockCardRepository(id, true);
+    } catch (err) {
+        return res.status(500).send(err)
+    }
+    return res.status(200).send("Card blocked")
+}
+
+export async function unlockCard(req: Request, res: Response) {
+    const { id, password } : { id: number, password: string } = req.body;
+    await unlockCardService(id, password);
+    try {
+        await blockCardRepository(id, false);
     } catch (err) {
         return res.status(500).send(err)
     }

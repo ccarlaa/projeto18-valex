@@ -32,7 +32,7 @@ export function viewCardStatusMiddleware(req: Request, res: Response, next: Next
     next();
 }
 
-export function blockCardMiddleware(req: Request, res: Response, next: NextFunction) {
+export function blockUnlockCardMiddleware(req: Request, res: Response, next: NextFunction) {
     const { id, password } : { id: number, password: string }= req.body;
         
     if(!id || !password){
