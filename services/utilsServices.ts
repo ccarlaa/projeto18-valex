@@ -23,8 +23,7 @@ export async function newPasswordVerification(password: string) {
 
 export async function verifyCVC(CVCcard: string, CVC: string) {
     const CVCCardDecrypt = decrypt(CVCcard);
-    const CVCdecrypt = decrypt(CVC);
-    if(CVCCardDecrypt != CVCdecrypt) {
+    if(CVCCardDecrypt != CVC) {
         throw { status: 422, message: "Wrong CVC" };
     }
     return;
