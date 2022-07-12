@@ -4,7 +4,9 @@ import dotenv from "dotenv";
 import "express-async-errors";
 
 import cardsRoute from "./routes/cardsRoute.js"
+import rechargeRoute from "./routes/rechargeRoutes.js";
 import errorHandle from "./middlewares/handErros.js"
+import { userInfo } from "os";
 
 dotenv.config();
 
@@ -13,6 +15,7 @@ app.use(cors());
 app.use(json());
 
 app.use(cardsRoute)
+app.use(rechargeRoute)
 app.use(errorHandle)
 
 const port = process.env.PORT

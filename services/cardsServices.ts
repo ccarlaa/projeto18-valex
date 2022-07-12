@@ -6,26 +6,12 @@ import { findById as findCardById, CardInsertData } from '../repositories/cardRe
 import { TransactionTypes, findByTypeAndEmployeeId } from "../repositories/cardRepository.js";
 import { findByCardId as findCardPayment} from '../repositories/paymentRepository.js';
 import { findByCardId as findCardRecharge } from '../repositories/rechargeRepository.js';
-import { findByApiKey } from '../repositories/companyRepository.js';
+import { verifyCompany } from './companyServices.js';
+import { verifyEmployee } from './employeeServices.js';
+import { verifyPassword, newPasswordVerification, verifyCVC, verifyExpirationDate } from './utilsServices.js';
 import dayjs from "dayjs";
 
- async function verifyEmployee(employeeId: number) {
-    const verifyEmployeeId = await findById(employeeId);
-    if(verifyEmployeeId == undefined) {
-        throw { status: 404, message: "No employee with this id" }
-    }
-    return;
-}
-
- async function verifyCompany(xApiKey: string) {
-    const verifyCompany = await findByApiKey(xApiKey);
-    if(verifyCompany == undefined) {
-        throw { status: 404, message: "No company with this api key" }
-    }
-    return;
-}
-
- async function verifyCardByType(type: TransactionTypes, employeeId: number) {
+export async function verifyCardByType(type: TransactionTypes, employeeId: number) {
     const verifyCard = await findByTypeAndEmployeeId(type, employeeId);
     if(verifyCard != undefined) {
         throw { status: 404, message: `This employee already has a ${type} card` }
@@ -33,43 +19,7 @@ import dayjs from "dayjs";
     return;
 }
 
- async function verifyPassword(password: string, cardPassword: string) {
-    const passwordNumeric = parseInt(password)
-    if(password.length != 4 || passwordNumeric > 10000) {
-        throw { status: 401, message: "Invalid password" }
-    }
-    const cardPasswordDecrypted = decrypt(cardPassword);
-    if (cardPasswordDecrypted != password) {
-        throw { status: 401, message: "Wrong password" }
-    }
-    return;
-}
-
-async function newPasswordVerification(password: string) {
-    const passwordNumeric = parseInt(password)
-    if(password.length != 4 || passwordNumeric > 10000) {
-        throw { status: 401, message: "Invalid password" }
-    }
-    return;
-}
-
- async function verifyCVC(CVCcard: string, CVC: string) {
-    const CVCCardDecrypt = decrypt(CVCcard);
-    const CVCdecrypt = decrypt(CVC);
-    if(CVCCardDecrypt != CVCdecrypt) {
-        throw { status: 422, message: "Wrong CVC" };
-    }
-    return;
-}
-
- async function verifyExpirationDate(expirationDate: any) {
-    if(dayjs().isBefore(expirationDate)){
-        throw { status: 401, message: "Expired card" };
-    }
-    return;
-}
-
- async function cardVerificationInfos(id: number) {
+export async function cardVerificationInfos(id: number) {
     const cardVerification: any = await findCardById(id);
     if(cardVerification == undefined) {
         throw { status: 404, message: "Card not found" };
