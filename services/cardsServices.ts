@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { findById } from '../repositories/employeeRepository.js';
 import { encrypt } from '../utils/criptografy.js';
-import { decrypt } from '../utils/criptografy.js';
 import { findById as findCardById, CardInsertData } from '../repositories/cardRepository.js';
 import { TransactionTypes, findByTypeAndEmployeeId } from "../repositories/cardRepository.js";
 import { findByCardId as findCardPayment} from '../repositories/paymentRepository.js';
 import { findByCardId as findCardRecharge } from '../repositories/rechargeRepository.js';
 import { verifyCompany } from './companyServices.js';
 import { verifyEmployee } from './employeeServices.js';
+import { balance } from './paymentServices.js';
 import { verifyPassword, newPasswordVerification, verifyCVC, verifyExpirationDate } from './utilsServices.js';
 import dayjs from "dayjs";
 
@@ -86,21 +86,13 @@ export async function viewCardStatusService(id: number) {
     const cardVerification: any = await cardVerificationInfos(id)
 
     const payments = await findCardPayment(id);
-    let totalOfPayments = 0;
-    for(let payment of payments) {
-        totalOfPayments += payment.amount;
-    }
 
     const recharges = await findCardRecharge(id);
-    let totalOfRecharges = 0;
-    for(let recharge of recharges) {
-        totalOfRecharges += recharge.amount;
-    }
 
-    const balance = recharges - payments;
-
+    const balanceTotal: number = await balance(payments, recharges)
+    
     const status : object = {
-        "balance": balance,
+        "balance": balanceTotal,
         "transactions": payments,
         "recharges": recharges 
     }
